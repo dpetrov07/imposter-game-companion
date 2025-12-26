@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
@@ -14,13 +16,14 @@ public class GameSession {
   @GeneratedValue
   private UUID id;
 
-  private String status;
+  @Enumerated(EnumType.STRING)
+  private GameStatus status;
 
   private Instant createdAt;
 
   protected GameSession() {}
 
-  public GameSession(String status) {
+  public GameSession(GameStatus status) {
     this.status = status;
     this.createdAt = Instant.now();
   }
@@ -29,7 +32,7 @@ public class GameSession {
     return id;
   }
 
-  public String getStatus() {
+  public GameStatus getStatus() {
     return status;
   }
 

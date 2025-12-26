@@ -1,4 +1,4 @@
-package com.dpetrov.imposter_companion_backend;
+package com.dpetrov.imposter_companion_backend.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
