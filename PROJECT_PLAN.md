@@ -30,6 +30,13 @@ Build and deploy a web-based tool that helps run an in-person "Imposter" game by
 - WebSockets
 - Fancy UI or animations
 
+## Entities
+- GameSession
+- Player
+- Words
+- Hints
+- Category
+
 ---
 
 ## Success Criteria
