@@ -10,6 +10,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+/**
+ * Entity representing a player in a game session.
+ * 
+ * Players are NORMAL by default but can be assigned to IMPOSTER.
+ */
 @Entity
 public class Player {
 
@@ -22,8 +27,8 @@ public class Player {
   @Enumerated(EnumType.STRING)
   private PlayerRole role;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "game_session_id")
+  @ManyToOne(optional = false) // Player must be assigned to a single game session
+  @JoinColumn(name = "game_session_id") // Requires game session to exist
   private GameSession gameSession;
 
   protected Player() {}

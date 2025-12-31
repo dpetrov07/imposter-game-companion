@@ -9,6 +9,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+/**
+ * Entity representing a game session.
+ * 
+ * Assigned a status to keep track of game state.
+ */
 @Entity
 public class GameSession {
 

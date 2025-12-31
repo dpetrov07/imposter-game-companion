@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dpetrov.imposter_companion_backend.domain.GameSession;
 
+/**
+ * Repository for accessing and managing data for GameSession entities.
+ */
 public interface GameSessionRepository extends JpaRepository<GameSession, UUID> {
   
 }
