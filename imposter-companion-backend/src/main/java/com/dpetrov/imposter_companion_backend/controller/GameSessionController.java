@@ -45,6 +45,12 @@ public class GameSessionController {
   public GameSession createGameSession() {
     return gameSessionService.createGame();
   }
+
+  @PostMapping("/games/{gameId}/start")
+  public GameSession startGameSession(@PathVariable UUID gameId) {
+    return gameSessionService.startGame(gameId);
+  }
+  
   
   @PostMapping("/games/{gameId}/players")
   public Player addPlayer(@PathVariable UUID gameId, @RequestBody CreatePlayerRequest request) {

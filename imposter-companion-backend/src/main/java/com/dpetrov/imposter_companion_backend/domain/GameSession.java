@@ -41,6 +41,10 @@ public class GameSession {
     return status;
   }
 
+  public void setStatus(GameStatus status) {
+    this.status = status;
+  }
+
   public Instant getCreatedAt() {
     return createdAt;
   }

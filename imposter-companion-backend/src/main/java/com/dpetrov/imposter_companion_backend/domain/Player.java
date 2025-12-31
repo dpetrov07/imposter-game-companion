@@ -27,8 +27,8 @@ public class Player {
   @Enumerated(EnumType.STRING)
   private PlayerRole role;
 
-  @ManyToOne(optional = false) // Player must be assigned to a single game session
-  @JoinColumn(name = "game_session_id") // Requires game session to exist
+  @ManyToOne(optional = false) // Each player belongs to only one game session
+  @JoinColumn(name = "game_session_id") // Enforces in database
   private GameSession gameSession;
 
   protected Player() {}
