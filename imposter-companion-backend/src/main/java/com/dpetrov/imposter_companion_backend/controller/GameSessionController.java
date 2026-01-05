@@ -3,6 +3,8 @@ package com.dpetrov.imposter_companion_backend.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpetrov.imposter_companion_backend.controller.dto.CreatePlayerRequest;
+import com.dpetrov.imposter_companion_backend.controller.dto.PlayerSecretResponse;
+import com.dpetrov.imposter_companion_backend.controller.dto.StartGameRequest;
 import com.dpetrov.imposter_companion_backend.domain.GameSession;
 import com.dpetrov.imposter_companion_backend.domain.Player;
 import com.dpetrov.imposter_companion_backend.service.GameSessionService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+
 
 /**
  * REST Controller for managing game sessions and players.
@@ -47,19 +50,26 @@ public class GameSessionController {
   }
 
   @PostMapping("/games/{gameId}/start")
-  public GameSession startGameSession(@PathVariable UUID gameId) {
-    return gameSessionService.startGame(gameId);
+  public GameSession startGameSession(@PathVariable UUID gameId, @RequestBody StartGameRequest request) {
+    return gameSessionService.startGame(gameId, request.getCategoryId());
   }
   
   
   @PostMapping("/games/{gameId}/players")
   public Player addPlayer(@PathVariable UUID gameId, @RequestBody CreatePlayerRequest request) {
-    return playerService.addPlayer(gameId, request.getName());
+    GameSession gameSession = gameSessionService.getGame(gameId);
+    return playerService.addPlayer(gameSession, request.getName());
   }
 
   @GetMapping("/games/{gameId}/players")
   public List<Player> getPlayers(@PathVariable UUID gameId) {
-    return playerService.getPlayersInGame(gameId);
+    GameSession gameSession = gameSessionService.getGame(gameId);
+    return playerService.getPlayersInGame(gameSession);
+  }
+
+  @GetMapping("/players/{playerId}/secret")
+  public PlayerSecretResponse getPlayerSecret(@PathVariable UUID playerId) {
+    return playerService.getPlayerSecret(playerId);
   }
   
 }

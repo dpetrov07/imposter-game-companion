@@ -23,8 +23,12 @@ public class Category {
   private String name;
 
   @OneToMany(mappedBy = "category") // Maps categories to associated words
-  private List<WordPair> words;
+  private List<WordPair> wordPairs;
 
   protected Category() {}
+
+  public List<WordPair> getWordPairs() {
+    return wordPairs;
+  }
 
 }

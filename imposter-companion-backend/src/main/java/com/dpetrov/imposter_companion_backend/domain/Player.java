@@ -27,6 +27,8 @@ public class Player {
   @Enumerated(EnumType.STRING)
   private PlayerRole role;
 
+  private String secretWord;
+
   @ManyToOne(optional = false) // Each player belongs to only one game session
   @JoinColumn(name = "game_session_id") // Enforces in database
   private GameSession gameSession;
@@ -36,6 +38,7 @@ public class Player {
   public Player(String name, GameSession gameSession) {
     this.name = name;
     this.gameSession = gameSession;
+    this.secretWord = null;
     this.role = PlayerRole.NORMAL;
   }
 
@@ -51,11 +54,23 @@ public class Player {
     return role;
   }
 
+  public String getSecretWord() {
+    return secretWord;
+  }
+
+  public void setSecretWord(String secretWord) {
+    this.secretWord = secretWord;
+  }
+
   public GameSession getGameSession() {
     return gameSession;
   }
 
   public void makeImposter() {
     this.role = PlayerRole.IMPOSTER;
+  }
+
+  public void makeNormal() {
+    this.role = PlayerRole.NORMAL;
   }
 }

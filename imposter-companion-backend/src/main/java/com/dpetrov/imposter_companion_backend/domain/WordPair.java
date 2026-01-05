@@ -20,7 +20,7 @@ public class WordPair {
   @GeneratedValue
   private UUID id;
 
-  private String name;
+  private String word;
   private String imposterHint;
 
   @ManyToOne(optional = false) // Each word belongs to only one category
@@ -28,5 +28,13 @@ public class WordPair {
   private Category category;
 
   protected WordPair() {}
+
+  public String getWord() {
+    return word;
+  }
+
+  public String getImposterHint() {
+    return imposterHint;
+  }
 
 }

@@ -5,7 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.dpetrov.imposter_companion_backend.controller.dto.PlayerSecretResponse;
 import com.dpetrov.imposter_companion_backend.domain.GameSession;
+import com.dpetrov.imposter_companion_backend.domain.GameStatus;
 import com.dpetrov.imposter_companion_backend.domain.Player;
 import com.dpetrov.imposter_companion_backend.repository.PlayerRepository;
 
@@ -16,11 +18,9 @@ import com.dpetrov.imposter_companion_backend.repository.PlayerRepository;
 public class PlayerService {
   
   private final PlayerRepository playerRepository;
-  private final GameSessionService gameSessionService;
 
-  public PlayerService(PlayerRepository playerRepository, GameSessionService gameSessionService) {
+  public PlayerService(PlayerRepository playerRepository) {
     this.playerRepository = playerRepository;
-    this.gameSessionService = gameSessionService;
   }
 
   /**
@@ -30,8 +30,7 @@ public class PlayerService {
    * @param request request body containing player data
    * @return new added player
    */
-  public Player addPlayer(UUID gameId, String name) {
-    GameSession gameSession = gameSessionService.getGame(gameId);
+  public Player addPlayer(GameSession gameSession, String name) {
     Player player = new Player(name, gameSession);
     return playerRepository.save(player);
   }
@@ -42,9 +41,29 @@ public class PlayerService {
    * @param gameId ID of game session requested
    * @return list of all players in game
    */
-  public List<Player> getPlayersInGame(UUID gameId) {
-    GameSession gameSession = gameSessionService.getGame(gameId);
+  public List<Player> getPlayersInGame(GameSession gameSession) {
     return playerRepository.findByGameSession(gameSession);
+  }
+
+  /**
+   * Returns payload of player role and secret word.
+   * 
+   * @param playerId ID of requested player
+   * @return payload of player info
+   */
+  public PlayerSecretResponse getPlayerSecret(UUID playerId) {
+
+    Player player = playerRepository.findById(playerId).orElseThrow();
+
+    if (player.getGameSession().getStatus() != GameStatus.STARTED) {
+      throw new IllegalStateException("Game Session has not started");
+    }
+
+    return new PlayerSecretResponse(
+      player.getRole(),
+      player.getSecretWord()
+    );
+
   }
 
 }
