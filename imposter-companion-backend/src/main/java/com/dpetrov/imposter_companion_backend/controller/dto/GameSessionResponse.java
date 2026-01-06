@@ -9,6 +9,6 @@ import com.dpetrov.imposter_companion_backend.domain.GameStatus;
  */
 public record GameSessionResponse(
   UUID id,
-  GameStatus gameStatus,
+  GameStatus status,
   int playerCount
  ) {}

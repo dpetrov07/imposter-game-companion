@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.GetMapping;
  * REST Controller for managing game sessions and players.
  *
  * Exposes end points for:
+ * - Getting existing game session
  * - Creating new game session
- * - Getting existing game
+ * - Starting game session
+ * - Reseting game session
  * - Adding players to game session
- * - Getting all players in game session
+ * - Getting players in game session
  */
 @RestController
 public class GameSessionController {
@@ -53,6 +55,10 @@ public class GameSessionController {
     return gameSessionService.startGame(gameId, request.categoryId());
   }
   
+  @PostMapping("games/{gameId}/reset")
+  public GameSessionResponse resetGameSession(@PathVariable UUID gameId) {
+    return gameSessionService.resetGame(gameId);
+  }
   
   @PostMapping("/games/{gameId}/players")
   public PlayerResponse addPlayer(@PathVariable UUID gameId, @RequestBody CreatePlayerRequest request) {

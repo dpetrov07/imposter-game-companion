@@ -26,6 +26,11 @@ import jakarta.transaction.Transactional;
 @Service
 public class GameSessionService {
 
+  private GameSession findGameSession(UUID gameId) {
+    return gameSessionRepository.findById(gameId)
+      .orElseThrow(() -> new IllegalArgumentException("Game Session not found."));
+  }
+
   private GameSessionResponse getGameSessionResponse(GameSession gameSession) {
     return new GameSessionResponse(
         gameSession.getId(),
@@ -46,13 +51,13 @@ public class GameSessionService {
   }
 
   /**
-   * Retrieves requested game session from Id
+   * Retrieves requested game session from ID.
    * 
    * @param gameId ID of game session to retrieve
    * @return retrieved game session response
    */
   public GameSessionResponse getGame(UUID gameId) {
-    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
+    GameSession gameSession = findGameSession(gameId);
     return getGameSessionResponse(gameSession);
   }
 
@@ -76,7 +81,7 @@ public class GameSessionService {
    */
   @Transactional
   public PlayerResponse addPlayer(UUID gameId, String name) {
-    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
+    GameSession gameSession = findGameSession(gameId);
     Player player = new Player(name, gameSession);
     gameSession.addPlayer(player);
     gameSessionRepository.save(gameSession);
@@ -96,10 +101,10 @@ public class GameSessionService {
   @Transactional
   public GameSessionResponse startGame(UUID gameId, UUID categoryId) {
 
-    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
+    GameSession gameSession = findGameSession(gameId);
 
     if (gameSession.getStatus() != GameStatus.CREATED) { 
-      throw new IllegalStateException("Invalid game sessions status");
+      throw new IllegalStateException("Invalid game session status");
     }
 
     List<Player> players = gameSession.getPlayers();
@@ -145,6 +150,34 @@ public class GameSessionService {
     gameSessionRepository.save(gameSession);
     return getGameSessionResponse(gameSession);
     
+  }
+
+  /**
+   * Resets requested game session.
+   * 
+   * @param gameId ID of game session to reset
+   * @return reset game session reponse
+   */
+  @Transactional
+  public GameSessionResponse resetGame(UUID gameId) {
+
+    GameSession gameSession = findGameSession(gameId);
+
+    if (gameSession.getStatus() == GameStatus.CREATED) { 
+      throw new IllegalStateException("Invalid game session status");
+    }
+
+    List<Player> players = gameSession.getPlayers();
+
+    for (Player player : players) {
+      player.setSecretWord(null);
+      player.makeNormal();
+    }
+
+    gameSession.setStatus(GameStatus.CREATED);
+    gameSessionRepository.save(gameSession);
+    return getGameSessionResponse(gameSession);
+
   }
 
 }
