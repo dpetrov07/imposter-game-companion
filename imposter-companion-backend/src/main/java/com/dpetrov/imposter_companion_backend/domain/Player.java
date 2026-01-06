@@ -66,6 +66,10 @@ public class Player {
     return gameSession;
   }
 
+  public void setGameSession(GameSession gameSession) {
+    this.gameSession = gameSession;
+  }
+
   public void makeImposter() {
     this.role = PlayerRole.IMPOSTER;
   }

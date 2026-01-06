@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.stereotype.Service;
 
+import com.dpetrov.imposter_companion_backend.controller.dto.GameSessionResponse;
+import com.dpetrov.imposter_companion_backend.controller.dto.PlayerResponse;
 import com.dpetrov.imposter_companion_backend.domain.Category;
 import com.dpetrov.imposter_companion_backend.domain.GameSession;
 import com.dpetrov.imposter_companion_backend.domain.GameStatus;
@@ -24,36 +26,61 @@ import jakarta.transaction.Transactional;
 @Service
 public class GameSessionService {
 
+  private GameSessionResponse getGameSessionResponse(GameSession gameSession) {
+    return new GameSessionResponse(
+        gameSession.getId(),
+        gameSession.getStatus(),
+        gameSession.getPlayerCount()
+    );
+  }
+
   private final GameSessionRepository gameSessionRepository;
   private final CategoryRepository categoryRepository;
   private final WordPairRepository wordPairRepository;
-  private final PlayerService playerService;
 
   public GameSessionService(GameSessionRepository gameSessionRepository, CategoryRepository categoryRepository, 
-    WordPairRepository wordPairRepository, PlayerService playerService) {
+    WordPairRepository wordPairRepository) {
     this.gameSessionRepository = gameSessionRepository;
     this.categoryRepository = categoryRepository;
     this.wordPairRepository = wordPairRepository;
-    this.playerService = playerService;
   }
 
   /**
    * Retrieves requested game session from Id
    * 
    * @param gameId ID of game session to retrieve
-   * @return found game session
+   * @return retrieved game session response
    */
-  public GameSession getGame(UUID gameId) {
-    return gameSessionRepository.findById(gameId).orElseThrow();
+  public GameSessionResponse getGame(UUID gameId) {
+    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
+    return getGameSessionResponse(gameSession);
   }
 
   /**
    * Creates a new game session.
    * 
-   * @return new created game session
+   * @return new created game session response
    */
-  public GameSession createGame() {
-    return gameSessionRepository.save(new GameSession(GameStatus.CREATED));
+  public GameSessionResponse createGame() {
+    GameSession gameSession = new GameSession(GameStatus.CREATED);
+    gameSessionRepository.save(gameSession);
+    return getGameSessionResponse(gameSession);
+  }
+
+   /**
+   * Adds a new player to an existing game session.
+   * 
+   * @param gameId ID of game session to join
+   * @param name name of player to add
+   * @return new added player response
+   */
+  @Transactional
+  public PlayerResponse addPlayer(UUID gameId, String name) {
+    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
+    Player player = new Player(name, gameSession);
+    gameSession.addPlayer(player);
+    gameSessionRepository.save(gameSession);
+    return new PlayerResponse(player.getId(), player.getName());
   }
 
   /**
@@ -63,18 +90,19 @@ public class GameSessionService {
    * Fails to start if < 3 players or game session does not exist or invalid state.
    * 
    * @param gameId ID of game session to start
-   * @return started game session
+   * @param categoryId ID of category selected for game
+   * @return started game session response
    */
   @Transactional
-  public GameSession startGame(UUID gameId, UUID categoryId) {
+  public GameSessionResponse startGame(UUID gameId, UUID categoryId) {
 
-    GameSession gameSession = getGame(gameId);
+    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
 
     if (gameSession.getStatus() != GameStatus.CREATED) { 
       throw new IllegalStateException("Invalid game sessions status");
     }
 
-    List<Player> players = playerService.getPlayersInGame(gameSession);
+    List<Player> players = gameSession.getPlayers();
 
     if (players.size() < 3) {
       throw new IllegalStateException("Invalid amount of players");
@@ -114,8 +142,8 @@ public class GameSessionService {
     }
 
     gameSession.setStatus(GameStatus.STARTED);
-
-    return gameSessionRepository.save(gameSession);
+    gameSessionRepository.save(gameSession);
+    return getGameSessionResponse(gameSession);
     
   }
 

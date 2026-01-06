@@ -5,12 +5,6 @@ import java.util.UUID;
 /**
  * Request DTO of JSON payload used to start a game session.
  */
-public class StartGameRequest {
-  
-  private UUID categoryId;
-  
-  public UUID getCategoryId() {
-    return categoryId;
-  }
-
-}
+public record StartGameRequest(
+  UUID categoryId
+) {}

@@ -1,13 +1,17 @@
 package com.dpetrov.imposter_companion_backend.domain;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 /**
  * Entity representing a game session.
@@ -25,6 +29,12 @@ public class GameSession {
   private GameStatus status;
 
   private Instant createdAt;
+
+  @OneToMany(mappedBy = "gameSession", 
+             cascade = CascadeType.ALL, 
+             orphanRemoval = true
+  ) // Enforce players to be owned by game session and shares lifecycle
+  private List<Player> players = new ArrayList<>();
 
   protected GameSession() {}
 
@@ -47,5 +57,25 @@ public class GameSession {
 
   public Instant getCreatedAt() {
     return createdAt;
+  }
+
+  public List<Player> getPlayers() {
+    return players;
+  }
+
+  public void addPlayer(Player player) {
+    players.add(player);
+    player.setGameSession(this);
+  }
+
+  public void removePlayers() {
+    for (Player player : players) {
+      player.setGameSession(null);
+    }
+    players.clear();
+  }
+
+  public int getPlayerCount() {
+    return players.size();
   }
 }

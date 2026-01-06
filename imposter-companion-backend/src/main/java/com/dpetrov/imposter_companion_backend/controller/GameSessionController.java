@@ -3,14 +3,13 @@ package com.dpetrov.imposter_companion_backend.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpetrov.imposter_companion_backend.controller.dto.CreatePlayerRequest;
+import com.dpetrov.imposter_companion_backend.controller.dto.GameSessionResponse;
+import com.dpetrov.imposter_companion_backend.controller.dto.PlayerResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.PlayerSecretResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.StartGameRequest;
-import com.dpetrov.imposter_companion_backend.domain.GameSession;
-import com.dpetrov.imposter_companion_backend.domain.Player;
 import com.dpetrov.imposter_companion_backend.service.GameSessionService;
 import com.dpetrov.imposter_companion_backend.service.PlayerService;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,31 +39,24 @@ public class GameSessionController {
   }
 
   @GetMapping("/games/{gameId}")
-  public GameSession getGameSession(@PathVariable UUID gameId) {
+  public GameSessionResponse getGameSession(@PathVariable UUID gameId) {
     return gameSessionService.getGame(gameId);
   }
 
   @PostMapping("/games")
-  public GameSession createGameSession() {
+  public GameSessionResponse createGameSession() {
     return gameSessionService.createGame();
   }
 
   @PostMapping("/games/{gameId}/start")
-  public GameSession startGameSession(@PathVariable UUID gameId, @RequestBody StartGameRequest request) {
-    return gameSessionService.startGame(gameId, request.getCategoryId());
+  public GameSessionResponse startGameSession(@PathVariable UUID gameId, @RequestBody StartGameRequest request) {
+    return gameSessionService.startGame(gameId, request.categoryId());
   }
   
   
   @PostMapping("/games/{gameId}/players")
-  public Player addPlayer(@PathVariable UUID gameId, @RequestBody CreatePlayerRequest request) {
-    GameSession gameSession = gameSessionService.getGame(gameId);
-    return playerService.addPlayer(gameSession, request.getName());
-  }
-
-  @GetMapping("/games/{gameId}/players")
-  public List<Player> getPlayers(@PathVariable UUID gameId) {
-    GameSession gameSession = gameSessionService.getGame(gameId);
-    return playerService.getPlayersInGame(gameSession);
+  public PlayerResponse addPlayer(@PathVariable UUID gameId, @RequestBody CreatePlayerRequest request) {
+    return gameSessionService.addPlayer(gameId, request.name());
   }
 
   @GetMapping("/players/{playerId}/secret")
