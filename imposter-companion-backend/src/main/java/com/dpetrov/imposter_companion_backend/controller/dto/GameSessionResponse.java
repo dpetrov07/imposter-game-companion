@@ -1,5 +1,6 @@
 package com.dpetrov.imposter_companion_backend.controller.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.dpetrov.imposter_companion_backend.domain.GameStatus;
@@ -10,5 +11,5 @@ import com.dpetrov.imposter_companion_backend.domain.GameStatus;
 public record GameSessionResponse(
   UUID id,
   GameStatus status,
-  int playerCount
+  List<PlayerResponse> players
  ) {}

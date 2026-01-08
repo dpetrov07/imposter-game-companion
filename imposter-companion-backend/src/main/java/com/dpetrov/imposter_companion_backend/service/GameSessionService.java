@@ -1,6 +1,8 @@
 package com.dpetrov.imposter_companion_backend.service;
 
 import com.dpetrov.imposter_companion_backend.repository.CategoryRepository;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -31,11 +33,16 @@ public class GameSessionService {
       .orElseThrow(() -> new IllegalArgumentException("Game Session not found."));
   }
 
-  private GameSessionResponse getGameSessionResponse(GameSession gameSession) {
+  private GameSessionResponse toGameSessionResponse(GameSession gameSession) {
+    List<PlayerResponse> playerResponses = new ArrayList<PlayerResponse>();
+    for (Player player : gameSession.getPlayers()) {
+      playerResponses.add(new PlayerResponse(player.getId(), player.getName()));
+    }
+
     return new GameSessionResponse(
         gameSession.getId(),
         gameSession.getStatus(),
-        gameSession.getPlayerCount()
+        playerResponses
     );
   }
 
@@ -58,7 +65,7 @@ public class GameSessionService {
    */
   public GameSessionResponse getGame(UUID gameId) {
     GameSession gameSession = findGameSession(gameId);
-    return getGameSessionResponse(gameSession);
+    return toGameSessionResponse(gameSession);
   }
 
   /**
@@ -69,7 +76,7 @@ public class GameSessionService {
   public GameSessionResponse createGame() {
     GameSession gameSession = new GameSession(GameStatus.CREATED);
     gameSessionRepository.save(gameSession);
-    return getGameSessionResponse(gameSession);
+    return toGameSessionResponse(gameSession);
   }
 
    /**
@@ -80,12 +87,12 @@ public class GameSessionService {
    * @return new added player response
    */
   @Transactional
-  public PlayerResponse addPlayer(UUID gameId, String name) {
+  public GameSessionResponse addPlayer(UUID gameId, String name) {
     GameSession gameSession = findGameSession(gameId);
     Player player = new Player(name, gameSession);
     gameSession.addPlayer(player);
     gameSessionRepository.save(gameSession);
-    return new PlayerResponse(player.getId(), player.getName());
+    return toGameSessionResponse(gameSession);
   }
 
   /**
@@ -148,7 +155,7 @@ public class GameSessionService {
 
     gameSession.setStatus(GameStatus.STARTED);
     gameSessionRepository.save(gameSession);
-    return getGameSessionResponse(gameSession);
+    return toGameSessionResponse(gameSession);
     
   }
 
@@ -176,7 +183,7 @@ public class GameSessionService {
 
     gameSession.setStatus(GameStatus.CREATED);
     gameSessionRepository.save(gameSession);
-    return getGameSessionResponse(gameSession);
+    return toGameSessionResponse(gameSession);
 
   }
 

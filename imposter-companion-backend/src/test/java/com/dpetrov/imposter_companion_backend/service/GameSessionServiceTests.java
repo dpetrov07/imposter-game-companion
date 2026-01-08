@@ -51,7 +51,7 @@ public class GameSessionServiceTests {
     GameSessionResponse startedGame = gameSessionService.startGame(gameId, categoryId);
 
     assertEquals(GameStatus.STARTED, startedGame.status());
-    assertEquals(5, startedGame.playerCount());
+    assertEquals(5, startedGame.players().size());
   }
 
   @Test
