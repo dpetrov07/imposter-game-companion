@@ -51,3 +51,9 @@ export async function getPlayerSecret(playerId) {
   if (!result.ok) throw new Error("Failed to retrieve player secret");
   return result.json();
 }
+
+export async function getCategories() {
+  const result = await fetch(`${BASE_URL}/categories`, { method: "GET"});
+  if (!result.ok) throw new Error("Failed to retrieve categories");
+  return result.json();
+}

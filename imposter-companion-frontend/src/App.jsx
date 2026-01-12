@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { createGame, addPlayer } from "./api/gameApi";
-import { CreateGame, Lobby } from "./screens";
+import { useEffect, useState } from "react";
+import { createGame, addPlayer, startGame, getPlayerSecret, getCategories } from "./api/gameApi";
+import { CreateGame, Lobby, RevealSecrets } from "./screens";
+import { GAME_STATUS } from "./constants";
 
 /**
  * Application controller of Imposter Companion game.
@@ -11,6 +12,20 @@ import { CreateGame, Lobby } from "./screens";
 function App() {
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function loadCategories() {
+    try {
+      const result = await getCategories();
+      setCategories(result);
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  loadCategories();
+  }, [])
 
   /**
    * Creates a new game session from CreateGame screen.
@@ -45,26 +60,53 @@ function App() {
   /**
    * Starts new game session if requirements met.
    */
-  // async function handleStartGame() {
-  //   setLoading(true);
-  //   try {
-  //     const startedGame = await startGame(game.id, null);
-  //   }
-  // }
+  async function handleStartGame(categoryId) {
+    setLoading(true);
+    try {
+      const startedGame = await startGame(game.id, categoryId);
+      setGame(startedGame);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /**
+   * Retrieves current player secret data.
+   */
+  async function handleRevealSecret(playerId) {
+    setLoading(true);
+    try {
+      return await getPlayerSecret(playerId);
+    } catch (err) {
+      alert(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
 
   /**
    * Current screen selection logic.
    */
-  let screen;
-  if (!game) {
-    screen = ( 
+  const screen = !game ? (
     <CreateGame onCreate={handleCreateGame} loading={loading} />
-    );
-  } else {
-    screen = (
-      <Lobby game={game} onAddPlayer={handleAddPlayer} loading={loading} />
-    );
-  }
+  ) : game.status === GAME_STATUS.CREATED ? (
+    <Lobby
+      game={game}
+      onAddPlayer={handleAddPlayer}
+      onStartGame={handleStartGame}
+      categories={categories}
+      loading={loading}
+    />
+  ) : game.status === GAME_STATUS.STARTED ? (
+    <RevealSecrets
+      game={game}
+      onRevealSecret={handleRevealSecret}
+      loading={loading}
+    />
+  ) : null;
 
   /**
    * Base app layout.
