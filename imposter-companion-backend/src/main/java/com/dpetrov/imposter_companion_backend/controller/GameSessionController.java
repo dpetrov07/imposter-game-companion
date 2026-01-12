@@ -2,14 +2,17 @@ package com.dpetrov.imposter_companion_backend.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dpetrov.imposter_companion_backend.controller.dto.CategoryResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.CreatePlayerRequest;
 import com.dpetrov.imposter_companion_backend.controller.dto.GameSessionResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.PlayerResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.PlayerSecretResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.StartGameRequest;
+import com.dpetrov.imposter_companion_backend.service.CategoryService;
 import com.dpetrov.imposter_companion_backend.service.GameSessionService;
 import com.dpetrov.imposter_companion_backend.service.PlayerService;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 /**
@@ -36,10 +41,13 @@ public class GameSessionController {
 
   private final GameSessionService gameSessionService;
   private final PlayerService playerService;
+  private final CategoryService categoryService;
 
-  public GameSessionController(GameSessionService gameSessionService, PlayerService playerService) {
+  public GameSessionController(GameSessionService gameSessionService, PlayerService playerService, 
+    CategoryService categoryService) {
     this.gameSessionService = gameSessionService;
     this.playerService = playerService;
+    this.categoryService = categoryService;
   }
 
   @GetMapping("/games/{gameId}")
@@ -70,6 +78,11 @@ public class GameSessionController {
   @GetMapping("/players/{playerId}/secret")
   public PlayerSecretResponse getPlayerSecret(@PathVariable UUID playerId) {
     return playerService.getPlayerSecret(playerId);
+  }
+  
+  @GetMapping("/categories")
+  public List<CategoryResponse> getCategories() {
+    return categoryService.getAllCategories();
   }
   
 }
