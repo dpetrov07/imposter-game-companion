@@ -46,6 +46,12 @@ export async function addPlayer(gameId, playerName) {
   return result.json();
 }
 
+export async function removePlayer(gameId, playerId) {
+  const result = await fetch(`${BASE_URL}/games/${gameId}/players/${playerId}`, { method: "DELETE"});
+  if (!result.ok) throw new Error("Failed to remove player");
+  return result.json();
+}
+
 export async function getPlayerSecret(playerId) {
   const result = await fetch(`${BASE_URL}/players/${playerId}/secret`, { method: "GET"});
   if (!result.ok) throw new Error("Failed to retrieve player secret");

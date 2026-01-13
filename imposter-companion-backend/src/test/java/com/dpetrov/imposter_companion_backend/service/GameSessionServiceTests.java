@@ -3,6 +3,7 @@ package com.dpetrov.imposter_companion_backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import com.dpetrov.imposter_companion_backend.domain.Player;
 import com.dpetrov.imposter_companion_backend.domain.PlayerRole;
 import com.dpetrov.imposter_companion_backend.repository.GameSessionRepository;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -29,6 +31,9 @@ public class GameSessionServiceTests {
 
   @Autowired
   private GameSessionRepository gameSessionRepository;
+
+  @Autowired
+  private EntityManager entityManager;
 
   private UUID gameId;
 
@@ -73,6 +78,19 @@ public class GameSessionServiceTests {
     for (Player player : gameSession.getPlayers()) {
       assertNotNull(player.getSecretWord());
     }
+  }
+
+  @Test
+  void removePlayer() {
+    entityManager.flush();
+
+    GameSession gameSession = gameSessionRepository.findById(gameId).orElseThrow();
+    UUID removePlayerId = gameSession.getPlayers().get(0).getId();
+    gameSessionService.removePlayer(gameId, removePlayerId);
+
+    assertEquals(4, gameSession.getPlayerCount());
+    assertTrue(gameSession.getPlayers().stream()
+      .noneMatch(player -> player.getId().equals(removePlayerId)));
   }
 
   @Test

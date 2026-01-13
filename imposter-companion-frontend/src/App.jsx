@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createGame, addPlayer, startGame, getPlayerSecret, getCategories } from "./api/gameApi";
+import { createGame, addPlayer, removePlayer, startGame, getPlayerSecret, getCategories } from "./api/gameApi";
 import { CreateGame, Lobby, RevealSecrets } from "./screens";
 import { GAME_STATUS } from "./constants";
 
@@ -43,12 +43,27 @@ function App() {
   }
 
   /**
-   * Adds a new player to current game from Lobby screen.
+   * Adds a new player to current game called from Lobby screen.
    */
   async function handleAddPlayer(playerName) {
     setLoading(true);
     try {
       const updatedGame = await addPlayer(game.id, playerName);
+      setGame(updatedGame);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /**
+   * Removes a player from current game called from Lobby screen.
+   */
+  async function handleRemovePlayer(playerId) {
+    setLoading(true);
+    try {
+      const updatedGame = await removePlayer(game.id, playerId);
       setGame(updatedGame);
     } catch (err) {
       alert(err.message);
@@ -96,6 +111,7 @@ function App() {
     <Lobby
       game={game}
       onAddPlayer={handleAddPlayer}
+      onRemovePlayer={handleRemovePlayer}
       onStartGame={handleStartGame}
       categories={categories}
       loading={loading}

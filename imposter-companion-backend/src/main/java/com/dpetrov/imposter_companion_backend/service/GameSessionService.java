@@ -84,14 +84,27 @@ public class GameSessionService {
    * 
    * @param gameId ID of game session to join
    * @param name name of player to add
-   * @return new added player response
+   * @return updated game session response
    */
   @Transactional
   public GameSessionResponse addPlayer(UUID gameId, String name) {
     GameSession gameSession = findGameSession(gameId);
     Player player = new Player(name, gameSession);
     gameSession.addPlayer(player);
-    gameSessionRepository.save(gameSession);
+    return toGameSessionResponse(gameSession);
+  }
+
+  /**
+   * Removes a player from existing game session.
+   * 
+   * @param gameId ID of targeted game session
+   * @param playerId ID of player to remove
+   * @return updated game session response
+   */
+  @Transactional
+  public GameSessionResponse removePlayer(UUID gameId, UUID playerId) {
+    GameSession gameSession = findGameSession(gameId);
+    gameSession.removePlayer(playerId);
     return toGameSessionResponse(gameSession);
   }
 
@@ -170,7 +183,7 @@ public class GameSessionService {
 
     GameSession gameSession = findGameSession(gameId);
 
-    if (gameSession.getStatus() == GameStatus.CREATED) { 
+    if (gameSession.getStatus() == GameStatus.CREATED) {
       throw new IllegalStateException("Invalid game session status");
     }
 

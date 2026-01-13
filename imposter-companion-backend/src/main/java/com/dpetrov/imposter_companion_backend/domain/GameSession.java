@@ -68,7 +68,12 @@ public class GameSession {
     player.setGameSession(this);
   }
 
-  public void removePlayers() {
+  public void removePlayer(UUID playerId) {
+    boolean result = players.removeIf(player -> player.getId().equals(playerId));
+    if (!result) { throw new IllegalArgumentException("Player not found in game session."); }
+  }
+
+  public void removeAllPlayers() {
     for (Player player : players) {
       player.setGameSession(null);
     }

@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dpetrov.imposter_companion_backend.controller.dto.CategoryResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.CreatePlayerRequest;
 import com.dpetrov.imposter_companion_backend.controller.dto.GameSessionResponse;
-import com.dpetrov.imposter_companion_backend.controller.dto.PlayerResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.PlayerSecretResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.StartGameRequest;
 import com.dpetrov.imposter_companion_backend.service.CategoryService;
@@ -19,10 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
 
 /**
  * REST Controller for managing game sessions and players.
@@ -73,6 +70,11 @@ public class GameSessionController {
   @PostMapping("/games/{gameId}/players")
   public GameSessionResponse addPlayer(@PathVariable UUID gameId, @RequestBody CreatePlayerRequest request) {
     return gameSessionService.addPlayer(gameId, request.name());
+  }
+
+  @DeleteMapping("/games/{gameId}/players/{playerId}")
+  public GameSessionResponse removePlayer(@PathVariable UUID gameId, @PathVariable UUID playerId) {
+    return gameSessionService.removePlayer(gameId, playerId);
   }
 
   @GetMapping("/players/{playerId}/secret")

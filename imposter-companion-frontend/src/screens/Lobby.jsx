@@ -6,17 +6,17 @@ import { useState } from "react";
  * - Displays list of players
  * - Collects new player names on input
  */
-function Lobby({ game, onAddPlayer, onStartGame, categories, loading }) {
-  const [player, setPlayer] = useState("");
+function Lobby({ game, onAddPlayer, onRemovePlayer, onStartGame, categories, loading }) {
+  const [playerName, setPlayerName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
   /**
    * Handles submitting a new player.
    */
   function submitPlayer() {
-    if(!player.trim()) return;
-    onAddPlayer(player);
-    setPlayer("");
+    if(!playerName.trim()) return;
+    onAddPlayer(playerName);
+    setPlayerName("");
   }
 
   return (
@@ -42,15 +42,23 @@ function Lobby({ game, onAddPlayer, onStartGame, categories, loading }) {
       {/* Display current list of players in lobby. */}
       <p> Players: </p>
       <ul>
-        {game.players.map((p) => (
-          <li key={p.id}>{p.name}</li>
+        {game.players.map((player) => (
+          <li key={player.id}>
+            {player.name}
+            <button
+              onClick={() => onRemovePlayer(player.id)}
+              disabled={loading}
+            >
+              x
+            </button>
+          </li>
         ))}
       </ul>
 
       {/* Input for entering a new player. */}
       <input
-        value={player}
-        onChange={(e) => setPlayer(e.target.value)}
+        value={playerName}
+        onChange={(e) => setPlayerName(e.target.value)}
         placeholder="Player Name"
         disabled={loading}
       />
