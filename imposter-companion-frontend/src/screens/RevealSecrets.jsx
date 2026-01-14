@@ -40,7 +40,7 @@ function RevealSecrets({ game, onRevealSecret, onResetGame, loading }) {
   if (!player) {
     return (
       <div className="screen">
-        <p> All players secrets have been revealed. </p>
+        <p className="secret-info"> All players secrets have been revealed. </p>
         <button className="primary-button" onClick={resetGame} disabled={loading}>
           Back to Lobby
         </button>
@@ -50,7 +50,7 @@ function RevealSecrets({ game, onRevealSecret, onResetGame, loading }) {
 
   return (
     <div className="screen">
-      <p className="player-progress">
+      <p className="secret-info">
         Player {index + 1} of {game.players.length}: {player.name}
       </p>
 

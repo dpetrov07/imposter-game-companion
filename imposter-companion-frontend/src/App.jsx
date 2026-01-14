@@ -35,6 +35,7 @@ function App() {
    * Creates a new game session from CreateGame screen.
    */
   async function handleCreateGame() {
+    if (loading) return;
     setLoading(true);
     try {
       const newGame = await createGame();
@@ -50,6 +51,7 @@ function App() {
    * Adds a new player to current game called from Lobby screen.
    */
   async function handleAddPlayer(playerName) {
+    if (!game || loading) return;
     setLoading(true);
     try {
       const updatedGame = await addPlayer(game.id, playerName);
@@ -65,6 +67,7 @@ function App() {
    * Removes a player from current game called from Lobby screen.
    */
   async function handleRemovePlayer(playerId) {
+    if (!game || loading) return;
     setLoading(true);
     try {
       const updatedGame = await removePlayer(game.id, playerId);
@@ -80,6 +83,7 @@ function App() {
    * Starts new game session if requirements met.
    */
   async function handleStartGame(categoryId) {
+    if (!game || loading) return;
     setLoading(true);
     try {
       const startedGame = await startGame(game.id, categoryId);
@@ -95,13 +99,13 @@ function App() {
    * Resets current game session.
    */
   async function handleResetGame() {
+    if (!game || loading) return;
     setLoading(true);
     try {
       const resetedGame = await resetGame(game.id);
       setGame(resetedGame);
     } catch (err) {
       alert(err.message);
-      throw err;
     } finally {
       setLoading(false);
     }
@@ -111,12 +115,12 @@ function App() {
    * Retrieves current player secret data.
    */
   async function handleRevealSecret(playerId) {
+    if (!game || loading) return;
     setLoading(true);
     try {
       return await getPlayerSecret(playerId);
     } catch (err) {
       alert(err.message);
-      throw err;
     } finally {
       setLoading(false);
     }

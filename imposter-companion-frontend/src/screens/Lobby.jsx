@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { GAME_LIMITS } from "../constants";
 
 /**
  * Lobby for displaying player setup screen.
@@ -10,14 +11,91 @@ function Lobby({ game, onAddPlayer, onRemovePlayer, onStartGame, categories, loa
   const [playerName, setPlayerName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showCategories, setShowCategories] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [startGameError, setStartGameError] = useState("");
+
+  const ERROR_TIMEOUT_MS = 2000;
+
+  /**
+   * Starts timer to clear nameError when present
+   */
+  useEffect(() => {
+    if (!nameError) return;
+
+    const timer = setTimeout(() => {
+      setNameError("");
+    }, ERROR_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, [nameError]);
+
+  /**
+   * Starts timer to clear startGameError when present
+   */
+  useEffect(() => {
+    if (!startGameError) return;
+
+    const timer = setTimeout(() => {
+      setStartGameError("");
+    }, ERROR_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, [startGameError]);
 
   /**
    * Handles submitting a new player.
    */
   function submitPlayer() {
-    if(!playerName.trim()) return;
-    onAddPlayer(playerName);
+    const errorMessage = validatePlayerName();
+    if (errorMessage) {
+      setNameError(errorMessage);
+      return;
+    }
+
+    onAddPlayer(playerName.trim());
     setPlayerName("");
+    setNameError("");
+  }
+
+  /**
+   * Handles checking for valid added player names.
+   * 
+   * @return true if name is valid
+   */
+  function validatePlayerName() {
+    const trimmedName = playerName.trim();
+    if(!trimmedName) return "Name cannot be blank.";
+    if(trimmedName.length > GAME_LIMITS.MAX_NAME_LENGTH) 
+      return `Name cannot exceed ${GAME_LIMITS.MAX_NAME_LENGTH} characters`;
+
+    const nameExists = game.players.some(
+      (player) => player.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (nameExists) return "That name is already taken."
+
+    return null;
+  }
+
+  /**
+   * Handles checking for ability to start game.
+   */
+  function handleStartGame() {
+    if (game.players.length < GAME_LIMITS.MIN_PLAYERS) {
+      setStartGameError(`At least ${GAME_LIMITS.MIN_PLAYERS} players are required to start the game.`);
+      return;
+    }
+
+    if (game.players.length > GAME_LIMITS.MAX_PLAYERS) {
+      setStartGameError(`Maximum of ${GAME_LIMITS.MAX_PLAYERS} players reached.`);
+      return;
+    }
+
+    if (!selectedCategory) {
+      setStartGameError("Please select a category.");
+      return;
+    }
+
+    onStartGame(selectedCategory);
   }
 
   return (
@@ -96,14 +174,25 @@ function Lobby({ game, onAddPlayer, onRemovePlayer, onStartGame, categories, loa
         Add Player
       </button>
 
+      {/* Displays error when exists for adding player */}
+      <div className="error-slot">
+        <p className="error-text">{nameError || "\u00A0"}</p>
+      </div>
+
       {/* Button to start the game */}
       <button
         className="primary-button"
-        onClick={() => onStartGame(selectedCategory)}
-        disabled={loading || game.players.length < 3 || !selectedCategory}
+        onClick={handleStartGame}
+        disabled={loading}
       >
         Start Game
       </button>
+
+      {/* Displays error when exists for starting game */}
+      <div className="error-slot">
+        <p className="error-text">{startGameError || "\u00A0"}</p>
+      </div>
+
     </div>
   );
 }

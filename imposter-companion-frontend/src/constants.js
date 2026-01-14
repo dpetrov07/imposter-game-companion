@@ -7,3 +7,9 @@ export const PLAYER_ROLE = {
   NORMAL: "NORMAL",
   IMPOSTER: "IMPOSTER",
 };
+
+export const GAME_LIMITS = {
+  MAX_NAME_LENGTH: 20,
+  MIN_PLAYERS: 3,
+  MAX_PLAYERS: 15,
+}

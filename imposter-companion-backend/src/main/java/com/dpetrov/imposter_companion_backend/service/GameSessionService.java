@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.dpetrov.imposter_companion_backend.controller.dto.GameSessionResponse;
 import com.dpetrov.imposter_companion_backend.controller.dto.PlayerResponse;
@@ -50,6 +52,8 @@ public class GameSessionService {
   private final CategoryRepository categoryRepository;
   private final WordPairRepository wordPairRepository;
 
+  private static final int MAX_PLAYERS = 15;
+
   public GameSessionService(GameSessionRepository gameSessionRepository, CategoryRepository categoryRepository, 
     WordPairRepository wordPairRepository) {
     this.gameSessionRepository = gameSessionRepository;
@@ -75,6 +79,7 @@ public class GameSessionService {
    */
   public GameSessionResponse createGame() {
     GameSession gameSession = new GameSession(GameStatus.CREATED);
+    
     gameSessionRepository.save(gameSession);
     return toGameSessionResponse(gameSession);
   }
@@ -89,8 +94,24 @@ public class GameSessionService {
   @Transactional
   public GameSessionResponse addPlayer(UUID gameId, String name) {
     GameSession gameSession = findGameSession(gameId);
+
+    if (gameSession.getPlayers().size() >= MAX_PLAYERS) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Maximum number of players reached." 
+      );
+    }
+
+    if (gameSession.getStatus() == GameStatus.STARTED) {
+      throw new ResponseStatusException(
+      HttpStatus.CONFLICT,
+      "Cannot modify players after game has started"
+      );
+    }
+
     Player player = new Player(name, gameSession);
     gameSession.addPlayer(player);
+    gameSessionRepository.saveAndFlush(gameSession);
     return toGameSessionResponse(gameSession);
   }
 
@@ -104,7 +125,16 @@ public class GameSessionService {
   @Transactional
   public GameSessionResponse removePlayer(UUID gameId, UUID playerId) {
     GameSession gameSession = findGameSession(gameId);
+
+    if (gameSession.getStatus() == GameStatus.STARTED) {
+      throw new ResponseStatusException(
+      HttpStatus.CONFLICT,
+      "Cannot modify players after game has started"
+      );
+    }
+
     gameSession.removePlayer(playerId);
+    gameSessionRepository.saveAndFlush(gameSession);
     return toGameSessionResponse(gameSession);
   }
 

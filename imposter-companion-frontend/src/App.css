@@ -17,7 +17,7 @@ body {
 }
 
 .app-header {
-  background-color: #1f2937;
+  background: linear-gradient(135deg, #1f2937, #111827);
   color: white;
   padding: 1rem;
   text-align: center;
@@ -35,8 +35,8 @@ body {
   background-color: white;
   padding: 2rem;
   width: 100%;
-  max-width: 420px;
-  border-radius: 8px;
+  max-width: 450px;
+  border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
@@ -44,8 +44,13 @@ body {
 .input {
   width: 100%;
   padding: 0.6rem;
-  margin-bottom: 1rem;
   font-size: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border: 1px solid #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
 /* ---------- Buttons ---------- */
@@ -61,7 +66,7 @@ button:disabled {
 .primary-button {
   width: 100%;
   padding: 0.7rem;
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
   background-color: #2563eb;
   color: white;
   border: none;
@@ -72,11 +77,20 @@ button:disabled {
 .secondary-button {
   width: 100%;
   padding: 0.7rem;
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0;
   background-color: #e5e7eb;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
+}
+
+.primary-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background-color: #d1d5db;
 }
 
 /* ---------- Create Game Screen ---------- */
@@ -90,7 +104,7 @@ button:disabled {
 /* ---------- Category List ---------- */
 .category-selector {
   position: relative;
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
 }
 
 .category-menu {
@@ -145,7 +159,7 @@ button:disabled {
 }
 
 /* ---------- Reveal Screen ---------- */
-.player-progress {
+.secret-info {
   text-align: center;
   margin-bottom: 1rem;
   font-weight: 500;
@@ -167,4 +181,18 @@ button:disabled {
 
 .secret-hint {
   font-size: 1.1rem;
+}
+
+/* ---------- Error Handling ---------- */
+.error-slot {
+  height: 16px;
+  margin-top: 5px;
+  margin-bottom: 12px;
+}
+
+.error-text {
+  margin: 2px;
+  color: #b91c1c;
+  line-height: 16px;
+  font-size: 0.9rem;
 }
