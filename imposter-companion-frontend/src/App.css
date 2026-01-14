@@ -1,0 +1,170 @@
+/* ---------- Global Reset ---------- */
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #f4f5f7;
+}
+
+/* ---------- App Layout ---------- */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background-color: #1f2937;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* ---------- Screen Container ---------- */
+.screen {
+  background-color: white;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Inputs ---------- */
+.input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* ---------- Buttons ---------- */
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.primary-button {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.secondary-button {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  background-color: #e5e7eb;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* ---------- Create Game Screen ---------- */
+.intro-text {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* ---------- Category List ---------- */
+.category-selector {
+  position: relative;
+  margin-bottom: 3rem;
+}
+
+.category-menu {
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  min-width: 300px;
+  z-index: 10;
+}
+
+.category-option {
+  background: #f3f4f6;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.category-option:hover {
+  background: #e5e7eb;
+}
+
+/* ---------- Player List ---------- */
+.player-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.player-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1rem;
+}
+
+/* ---------- Reveal Screen ---------- */
+.player-progress {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.secret {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.secret-role {
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.secret-hint {
+  font-size: 1.1rem;
+}

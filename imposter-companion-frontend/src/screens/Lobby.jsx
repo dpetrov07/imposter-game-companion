@@ -9,6 +9,7 @@ import { useState } from "react";
 function Lobby({ game, onAddPlayer, onRemovePlayer, onStartGame, categories, loading }) {
   const [playerName, setPlayerName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showCategories, setShowCategories] = useState(false);
 
   /**
    * Handles submitting a new player.
@@ -20,32 +21,54 @@ function Lobby({ game, onAddPlayer, onRemovePlayer, onStartGame, categories, loa
   }
 
   return (
-    <div>
-      <p>
+    <div className="screen">
+      {/* <p>
         Game ID: <code>{game.id}</code>
-      </p>
+      </p> */}
 
-      {/* Category selection dropdown menu. */}
-      <select
-        value={selectedCategory}
-        onChange={(e) => setSelectedCategory(e.target.value)}
-        disabled={loading}
-      >
-        <option value="">Categories</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </select>
+      {/* Category selection menu. */}
+      <div className="category-selector">
+        {/* Show category button. */}
+        <button
+          className="secondary-button"
+          onClick={() => setShowCategories((open) => !open)}
+          disabled={loading}
+        >
+        {/* Button text to show category or default text */}
+          {selectedCategory
+            ? `Selected Category: ${categories.find(c => c.id === selectedCategory)?.name}`
+            : "Select Category"}
+        </button>
+
+        {/* Categories in dropdown menu. */}
+        {showCategories && (
+          <div className="category-menu">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className="category-option"
+                onClick={() => {
+                  setSelectedCategory(category.id);
+                  setShowCategories(false);
+                }}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Display current list of players in lobby. */}
       <p> Players: </p>
-      <ul>
+      <ul className="player-list">
         {game.players.map((player) => (
-          <li key={player.id}>
+          <li key={player.id} className="player-item">
             {player.name}
+
+            {/* Button to remove player. */}
             <button
+              className="remove-button"
               onClick={() => onRemovePlayer(player.id)}
               disabled={loading}
             >
@@ -57,19 +80,25 @@ function Lobby({ game, onAddPlayer, onRemovePlayer, onStartGame, categories, loa
 
       {/* Input for entering a new player. */}
       <input
+        className="input"
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
         placeholder="Player Name"
         disabled={loading}
       />
 
-      {/* Button to request to add a new player. */}
-      <button onClick={submitPlayer} disabled={loading}>
+      {/* Button to add a new player. */}
+      <button
+        className="secondary-button"
+        onClick={submitPlayer}
+        disabled={loading}
+      >
         Add Player
       </button>
 
       {/* Button to start the game */}
       <button
+        className="primary-button"
         onClick={() => onStartGame(selectedCategory)}
         disabled={loading || game.players.length < 3 || !selectedCategory}
       >

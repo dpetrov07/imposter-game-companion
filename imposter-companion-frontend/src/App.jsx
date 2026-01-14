@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createGame, addPlayer, removePlayer, startGame, getPlayerSecret, getCategories } from "./api/gameApi";
+import { createGame, addPlayer, removePlayer, startGame, resetGame, getPlayerSecret, getCategories } from "./api/gameApi";
 import { CreateGame, Lobby, RevealSecrets } from "./screens";
 import { GAME_STATUS } from "./constants";
 
@@ -14,6 +14,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
 
+
+  /**
+   * Loads categories from database on app render
+   */
   useEffect(() => {
     async function loadCategories() {
     try {
@@ -88,6 +92,22 @@ function App() {
   }
 
   /**
+   * Resets current game session.
+   */
+  async function handleResetGame() {
+    setLoading(true);
+    try {
+      const resetedGame = await resetGame(game.id);
+      setGame(resetedGame);
+    } catch (err) {
+      alert(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /**
    * Retrieves current player secret data.
    */
   async function handleRevealSecret(playerId) {
@@ -120,6 +140,7 @@ function App() {
     <RevealSecrets
       game={game}
       onRevealSecret={handleRevealSecret}
+      onResetGame={handleResetGame}
       loading={loading}
     />
   ) : null;
@@ -129,11 +150,11 @@ function App() {
    */
   return (
     <div className="app">
-      <header>
+      <header className="app-header">
         <h1>Imposter Game Companion</h1>
       </header>
 
-      <main>
+      <main className="app-main">
         {screen}
       </main>
     </div>
