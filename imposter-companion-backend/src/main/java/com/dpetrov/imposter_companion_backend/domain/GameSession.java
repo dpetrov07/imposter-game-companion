@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,6 +33,8 @@ public class GameSession {
 
   private Instant createdAt;
 
+  private Instant lastActivityAt;
+
   @OneToMany(mappedBy = "gameSession", 
              cascade = CascadeType.ALL, 
              orphanRemoval = true
@@ -41,6 +46,7 @@ public class GameSession {
   public GameSession(GameStatus status) {
     this.status = status;
     this.createdAt = Instant.now();
+    this.lastActivityAt = this.createdAt;
   }
 
   public UUID getId() {
@@ -59,6 +65,14 @@ public class GameSession {
     return createdAt;
   }
 
+  public Instant getLastActivityAt() {
+    return lastActivityAt;
+  }
+
+  public void touch() {
+    this.lastActivityAt = Instant.now();
+  }
+
   public List<Player> getPlayers() {
     return players;
   }
@@ -70,7 +84,11 @@ public class GameSession {
 
   public void removePlayer(UUID playerId) {
     boolean result = players.removeIf(player -> player.getId().equals(playerId));
-    if (!result) { throw new IllegalArgumentException("Player not found in game session."); }
+    if (!result) {
+      throw new ResponseStatusException(
+      HttpStatus.NOT_FOUND,
+      "Player not found.");
+    }
   }
 
   public void removeAllPlayers() {

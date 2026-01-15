@@ -69,6 +69,8 @@ public class GameSessionService {
    */
   public GameSessionResponse getGame(UUID gameId) {
     GameSession gameSession = findGameSession(gameId);
+    gameSession.touch();
+    gameSessionRepository.save(gameSession);
     return toGameSessionResponse(gameSession);
   }
 
@@ -105,12 +107,22 @@ public class GameSessionService {
     if (gameSession.getStatus() == GameStatus.STARTED) {
       throw new ResponseStatusException(
       HttpStatus.CONFLICT,
-      "Cannot modify players after game has started"
+      "Cannot modify players after game has started."
       );
+    }
+
+    boolean nameExists = gameSession.getPlayers().stream()
+      .anyMatch(player -> player.getName().equalsIgnoreCase(name));
+    if (nameExists) {
+      throw new ResponseStatusException(
+      HttpStatus.BAD_REQUEST,
+      "Player name already exists."
+  );
     }
 
     Player player = new Player(name, gameSession);
     gameSession.addPlayer(player);
+    gameSession.touch();
     gameSessionRepository.saveAndFlush(gameSession);
     return toGameSessionResponse(gameSession);
   }
@@ -134,6 +146,7 @@ public class GameSessionService {
     }
 
     gameSession.removePlayer(playerId);
+    gameSession.touch();
     gameSessionRepository.saveAndFlush(gameSession);
     return toGameSessionResponse(gameSession);
   }
@@ -154,13 +167,19 @@ public class GameSessionService {
     GameSession gameSession = findGameSession(gameId);
 
     if (gameSession.getStatus() != GameStatus.CREATED) { 
-      throw new IllegalStateException("Invalid game session status");
+      throw new ResponseStatusException(
+      HttpStatus.CONFLICT,
+      "Game has already started."
+      );
     }
 
     List<Player> players = gameSession.getPlayers();
 
     if (players.size() < 3) {
-      throw new IllegalStateException("Invalid amount of players");
+      throw new ResponseStatusException(
+      HttpStatus.BAD_REQUEST,
+      "At least 3 players are required to start the game."
+      );
     }
 
     // Reset all player roles
@@ -174,13 +193,19 @@ public class GameSessionService {
     imposter.makeImposter();
 
     Category category = categoryRepository.findById(categoryId)
-      .orElseThrow(() -> new IllegalArgumentException("Invalid category"));
+      .orElseThrow(() -> new ResponseStatusException(
+      HttpStatus.BAD_REQUEST,
+      "Invalid category."
+    ));
     
     // Retrieve word pairs from selected category
     List<WordPair> wordPairs = wordPairRepository.findByCategory(category);
 
     if (wordPairs.isEmpty()) {
-      throw new IllegalStateException("No words found in category");
+      throw new ResponseStatusException(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      "No words available for selected category"
+      );
     }
 
     // Retrieve random word from selected category
@@ -197,6 +222,7 @@ public class GameSessionService {
     }
 
     gameSession.setStatus(GameStatus.STARTED);
+    gameSession.touch();
     gameSessionRepository.save(gameSession);
     return toGameSessionResponse(gameSession);
     
@@ -225,6 +251,7 @@ public class GameSessionService {
     }
 
     gameSession.setStatus(GameStatus.CREATED);
+    gameSession.touch();
     gameSessionRepository.save(gameSession);
     return toGameSessionResponse(gameSession);
 

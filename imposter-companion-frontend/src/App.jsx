@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createGame, addPlayer, removePlayer, startGame, resetGame, getPlayerSecret, getCategories } from "./api/gameApi";
+import { createGame, addPlayer, removePlayer, getGame, startGame, resetGame, getPlayerSecret, getCategories } from "./api/gameApi";
 import { CreateGame, Lobby, RevealSecrets } from "./screens";
 import { GAME_STATUS } from "./constants";
 
@@ -14,6 +14,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
 
+  const KEEP_ALIVE_INTERVAL = 600000; // 10 minutes
 
   /**
    * Loads categories from database on app render
@@ -30,6 +31,27 @@ function App() {
 
   loadCategories();
   }, [])
+
+  /**
+   * Calls get game periodically to maintain game state
+   */
+  useEffect(() => {
+    if (!game) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const refreshedGame = await getGame(game.id);
+        setGame(refreshedGame);
+        console.log("Refreshed game.");
+      } catch (err) {
+        console.warn("Failed to refresh game.", err);
+      }
+    }, KEEP_ALIVE_INTERVAL);
+
+    return () => clearInterval(interval);
+  // Depend on game.id to avoid restarting on every update
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game?.id]);
 
   /**
    * Creates a new game session from CreateGame screen.
