@@ -32,7 +32,10 @@ import org.springframework.web.bind.annotation.GetMapping;
  * - Adding players to game session
  * - Getting players in game session
  */
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+  "http://localhost:5173",
+  "vercel.app"
+})
 @RestController
 public class GameSessionController {
 

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function getGame(gameId) {
   const result = await fetch(`${BASE_URL}/games/${gameId}`, { method: "GET"});
