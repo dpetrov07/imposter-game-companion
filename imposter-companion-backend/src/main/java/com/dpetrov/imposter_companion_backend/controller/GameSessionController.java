@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @CrossOrigin(origins = {
   "http://localhost:5173",
-  "vercel.app"
+  "https://imposter-game-companion.vercel.app"
 })
 @RestController
 public class GameSessionController {
