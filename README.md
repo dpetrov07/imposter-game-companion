@@ -4,6 +4,9 @@ Imposter Game Companion is a simple web app that helps you run an in-person
 game. One person hosts the game on their device and
 passes it around so each player can privately see their role.
 
+Live Demo: https://imposter-game-companion.vercel.app
+> Note: Backend may take ~30-60 seconds to wake up on first "Create Game" request
+
 ---
 
 ## How It Works
@@ -30,6 +33,25 @@ passes it around so each player can privately see their role.
 - JavaScript
 - Fetch API
 - Minimal CSS
+
+---
+
+## Architecture
+- Backend: Spring Boot REST API exposing game session and player endpoints
+- Frontend: React app that uses REST API to manage game state and UI
+- Database: PostgreSQL (Supabase)
+- ORM: JPA/Hibernate for entity mapping and persistence
+- Migrations: Flyway for schema versioning and data
+- Deployment: Dockerized backend deployed on Render
+
+## Data Management
+- Database schema and seed data are managed with Flyway migrations
+- Inactive sessions automatically cleaned up by scheduled background jobs
+
+## Production Notes
+- Backend containerized on Docker with a multi-stage build
+- Deployed on Render with a managed PostgreSQL database on Supabase
+- Frontend deployed and hosted on Vercel
 
 ---
 
